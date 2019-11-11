@@ -25,6 +25,7 @@ public class MapperProxy implements InvocationHandler {
     String className = method.getDeclaringClass().getName();
     String methodName = method.getName();
     String key = className + "." + methodName;
+    System.out.println(key);
     Mapper mapper = mappers.get(key);
     if(mapper == null) {
       throw new IllegalArgumentException("传参有误");

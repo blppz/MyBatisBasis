@@ -1,5 +1,6 @@
 package com.bl.myMyBatis.utils;
 
+import com.bl.myMyBatis.annotation.Select;
 import com.bl.myMyBatis.config.Configuration;
 import com.bl.myMyBatis.config.Mapper;
 import org.apache.ibatis.io.Resources;
@@ -10,9 +11,13 @@ import org.dom4j.io.SAXReader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *  用于解析配置文件
@@ -82,17 +87,16 @@ public class XMLConfigBuilder {
                     Map<String, Mapper> mappers = loadMapperConfiguration(mapperPath);
                     //给configuration中的mappers赋值
                     cfg.setMappers(mappers);
+                } else{
+                    System.out.println("使用的是注解");
+                    //表示没有resource属性，用的是注解
+                    //获取class属性的值
+                    String daoClassPath = mapperElement.attributeValue("class");
+                    //根据daoClassPath获取封装的必要信息
+                    Map<String,Mapper> mappers = loadMapperAnnotation(daoClassPath);
+                    //给configuration中的mappers赋值
+                    cfg.setMappers(mappers);
                 }
-                //else{
-                //    System.out.println("使用的是注解");
-                //    //表示没有resource属性，用的是注解
-                //    //获取class属性的值
-                //    String daoClassPath = mapperElement.attributeValue("class");
-                //    //根据daoClassPath获取封装的必要信息
-                //    Map<String,Mapper> mappers = loadMapperAnnotation(daoClassPath);
-                //    //给configuration中的mappers赋值
-                //    cfg.setMappers(mappers);
-                //}
             }
             //返回Configuration
             return cfg;
@@ -151,7 +155,9 @@ public class XMLConfigBuilder {
         }catch(Exception e){
             throw new RuntimeException(e);
         }finally{
-            in.close();
+            if(in != null) {
+                in.close();
+            }
         }
     }
 
@@ -160,7 +166,7 @@ public class XMLConfigBuilder {
      * 根据方法名称和类名，以及方法上注解value属性的值，组成Mapper的必要信息
      * @param daoClassPath
      * @return
-
+     */
     private static Map<String,Mapper> loadMapperAnnotation(String daoClassPath)throws Exception{
         //定义返回值对象
         Map<String,Mapper> mappers = new HashMap<String, Mapper>();
@@ -202,15 +208,14 @@ public class XMLConfigBuilder {
                 String key = className+"."+methodName;
                 //给map赋值
                 mappers.put(key,mapper);
+                //System.out.println(mapper);
             }
+        }
+        Set<Map.Entry<String, Mapper>> entries = mappers.entrySet();
+        for(Map.Entry<String, Mapper> m: entries) {
+            System.out.println(m.getKey() + ":" + m.getValue());
         }
         return mappers;
     }
-     */
-
-
-
-
-
 
 }

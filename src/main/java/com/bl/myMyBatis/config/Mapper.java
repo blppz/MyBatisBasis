@@ -9,6 +9,14 @@ public class Mapper {
   private String queryString; // sql
   private String resultType;
 
+  @Override
+  public String toString() {
+    return "Mapper{" +
+        "queryString='" + queryString + '\'' +
+        ", resultType='" + resultType + '\'' +
+        '}';
+  }
+
   public String getQueryString() {
     return queryString;
   }

@@ -25,5 +25,6 @@
   <!--使用XML，这里应该是resource-->
   <mappers>
     <mapper resource="com/bl/dao/IUserMapper.xml"></mapper>
+<!--    <mapper class="com.bl.myMyBatis.test.IUserDao"></mapper>-->
   </mappers>
 </configuration>
